@@ -1,0 +1,118 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+
+\usepackage{sagetex}
+\setlength{\sagetexindent}{10ex}
+
+\usepackage[left=15mm,top=30mm,bottom=30mm,right=15mm]{geometry}
+
+\begin{document}
+
+\begin{center}
+\Large{\textbf{Арапов Степан , М8О-208б-19}}
+
+\Large{\textbf{Лабораторная работа 2. Третья часть.}}
+\end{center}
+
+\textbf{Задание:}
+\begin{enumerate}
+\item Привести поверхность, заданную уравнением, к каноническому виду.
+\item Построить исходную поверхность и поверхность в каноническом виде.
+\item Собственные числа и вектора рассчитать вручную, сравнить с результатом встроенных функций.
+\end{enumerate}
+
+По списку 2, Вариант 2: 
+$f(x, y, z) = 6x^2 + 12xy + 7y^2 + 2xz + 3z^2 + 5x + 5y + 5z - 18$
+\newline
+
+\textbf{Построение исходной поверхности.}
+\begin{sageblock}
+f(x, y, z) = 6*x^2 + 12*x*y + 7*y^2 + 2*x*z + 3*z^2 + 5*x + 5*y + 5*z - 18
+\end{sageblock}
+
+Вот так теперь выглядит наша функция:
+$\sage{f}$
+
+Построим исходную поверхность.
+
+\begin{center}
+\sageplot{implicit_plot3d(f(x=x, y=y, z=z), (x, -10, 10), (y, -10, 10), (z, -10, 10),  figsize=3)}
+\end{center}
+\textbf{Приведение поверхности к каноническому виду.} \newline
+Создадим две матрицы: матрица $A$ для квадратичной формы, матрица $B$ из коэффициентов квадратичной и линейной формы и из свободного члена.
+\begin{sageblock}
+A = matrix([
+    [6, 6, 1],
+    [6, 7, 0],
+    [1, 0, 3]
+])
+
+B = matrix([
+    [6, 6, 1, 2.5],
+    [6, 7, 0, 2.5],
+    [1, 0, 3, 2.5],
+    [2.5, 2.5, 2.5, -18]
+])
+\end{sageblock}
+Посчитаем ортогональные инварианты.
+\begin{sageblock}
+t1 = A.trace()
+t2 = A[0:2, 0:2].det() + A[[0, 2], [0, 2]].det() + A[1:3, 1:3].det()
+d = A.det()
+delta = B.det()
+\end{sageblock}
+Результаты вычислений: $t1 = \sage{t1},   t2 = \sage{t2},   d = \sage{d},  delta = \sage{delta}$ \newline
+Найдём собственные значения матрицы А.
+
+\begin{sageblock}
+E = matrix.identity(3)
+eigenvalues = []
+
+var("lmbda")
+for eigenvalue in solve((A - lmbda * E).det() == 0, lmbda):
+    show(n(eigenvalue.rhs()))
+    eigenvalues.append(eigenvalue.rhs())
+\end{sageblock}
+Результат в символьном и численном виде:
+$$\sage{eigenvalues[0]} == \sage{eigenvalues[0].n()}$$
+$$\sage{eigenvalues[1]} == \sage{eigenvalues[1].n()}$$
+$$\sage{eigenvalues[2]} == \sage{eigenvalues[2].n()}$$
+ Или другой способ:
+\begin{sageblock}
+A.eigenvalues()
+\end{sageblock}
+$$\sage{A.eigenvalues()[0]}, \sage{A.eigenvalues()[1]}, \sage{A.eigenvalues()[2]}$$\newline
+Получили одинаковые значения (c незначительной погрешностью), значит посчитано верно. \newline
+Перейдём к последнему шагу, а именно к построениею поверхности в каноническом виде.
+Для начала нужно составить каноническое уравнение.
+\begin{sageblock}
+f_canonical(x,y,z) = x**2 * A.eigenvalues()[0] +
+  y**2 * A.eigenvalues()[1] + z**2 * A.eigenvalues()[2]  + delta / d
+\end{sageblock}
+Получили уравнение:
+$$\sage{f_canonical}$$
+Наконец изобразим:
+\begin{center}
+\sageplot{implicit_plot3d(f_canonical, (x, -10, 10), (y, -10, 10), (z, -10, 10), figsize=3)}
+\end{center}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
